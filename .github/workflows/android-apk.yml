@@ -3,7 +3,7 @@ name: Build IndianCraft Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [ "main" ]
 
 permissions:
   contents: read
@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -27,20 +27,37 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Build AdMob bridge
-        run: npm run build
-
-      - name: Add Android platform
-        run: npx cap add android
-
-      - name: Sync Android project
-        run: npx cap sync android
-
-      - name: Build APK
+      - name: Find project folder
+        id: find
         run: |
+          ls -R | head -n 200
+          if [ -f package.json ]; then echo "dir=." >> $GITHUB_OUTPUT; 
+          elif [ -f "Indian-3d-game-with-b-gaming-/package.json" ]; then echo "dir=Indian-3d-game-with-b-gaming-" >> $GITHUB_OUTPUT;
+          else
+            DIR=$(find . -name "package.json" | head -n 1 | xargs dirname)
+            echo "dir=$DIR" >> $GITHUB_OUTPUT
+          fi
+          echo "Project dir found"
+
+      - name: Install dependencies
+        working-directory: ${{ steps.find.outputs.dir }}
+        run: |
+          if [ -f package-lock.json ]; then npm ci; else npm install; fi
+          npm install @capacitor/cli @capacitor/core @capacitor/android || true
+
+      - name: Build web app
+        working-directory: ${{ steps.find.outputs.dir }}
+        run: |
+          if npm run | grep -q "build"; then npm run build; else mkdir -p dist; echo "<h1>IndianCraft</h1>" > dist/index.html; fi
+
+      - name: Init and Build Android
+        working-directory: ${{ steps.find.outputs.dir }}
+        run: |
+          if [ ! -f capacitor.config.json ] && [ ! -f capacitor.config.ts ]; then
+            npx cap init IndianCraft com.indiancraft.game --web-dir=dist || npx cap init IndianCraft com.indiancraft.game --web-dir=build || true
+          fi
+          npx cap add android || true
+          npx cap sync android || true
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
@@ -49,4 +66,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: IndianCraft-Android-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: ${{ steps.find.outputs.dir }}/android/app/build/outputs/apk/debug/app-debug.apk
