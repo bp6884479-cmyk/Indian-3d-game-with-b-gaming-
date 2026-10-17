@@ -1,0 +1,68 @@
+name: Indian Craft 3D Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'index.html'
+      - '.github/workflows/android-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout game
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Prepare game
+        run: |
+          mkdir -p android-game/www
+          cp index.html android-game/www/index.html
+          cd android-game
+          npm init -y
+          npm install @capacitor/core @capacitor/android
+          npm install --save-dev @capacitor/cli
+
+      - name: Configure Capacitor
+        working-directory: android-game
+        run: |
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.indiancraft3d.game",
+            "appName": "Indian Craft 3D",
+            "webDir": "www"
+          }
+          EOF
+          npx cap add android
+
+      - name: Build APK
+        working-directory: android-game
+        run: |
+          npx cap sync android
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Indian-Craft-3D-APK
+          path: android-game/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
