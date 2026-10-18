@@ -1,0 +1,81 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+env:
+  ADMOB_APP_ID: ca-app-pub-7956447630438100~9662953701
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Project files banao
+        run: |
+          cat > package.json <<'EOF'
+          {
+            "name": "indiancraft",
+            "version": "1.0.0",
+            "private": true,
+            "dependencies": {
+              "@capacitor/core": "^7.0.0",
+              "@capacitor/android": "^7.0.0",
+              "@capacitor-community/admob": "^7.0.0"
+            },
+            "devDependencies": {
+              "@capacitor/cli": "^7.0.0"
+            }
+          }
+          EOF
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.indiancraft.adventure",
+            "appName": "IndianCraft",
+            "webDir": "www"
+          }
+          EOF
+          mkdir -p www
+          cp index.html www/index.html
+
+      - name: Install
+        run: npm install
+
+      - name: Android platform
+        run: npx cap add android
+
+      - name: AdMob App ID manifest me daalo
+        run: |
+          python3 - <<'EOF'
+          import os
+          p = 'android/app/src/main/AndroidManifest.xml'
+          s = open(p, encoding='utf-8').read()
+          tag = '<meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="%s"/>' % os.environ['ADMOB_APP_ID']
+          if 'APPLICATION_ID' not in s:
+              s = s.replace('</application>', '    ' + tag + '\n    </application>')
+          open(p, 'w', encoding='utf-8').write(s)
+          EOF
+
+      - name: Sync
+        run: npx cap sync android
+
+      - name: Debug APK banao
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IndianCraft-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
