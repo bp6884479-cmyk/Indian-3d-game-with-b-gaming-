@@ -929,7 +929,7 @@ window.__invLoad(SV);
 for(let i=0;i<14;i++)mkMob([0,1,4,5,6][i%5],P.x+Math.random()*50-25,P.z+Math.random()*50-25);
 ui();$('#ld').textContent='World ready!'}
 $('#play').onclick=()=>{if(window.IndianCraftAds)window.IndianCraftAds.hideBanner();started=true;jbRest();$('#lv').style.display='block';if(tc)fs();if(tc)toast('Tap = place / open · Hold = break');$('#menu').style.display='none';if(!tc)$('#c').requestPointerLock&&$('#c').requestPointerLock()};
-function loop(now){requestAnimationFrame(loop);if(!booted){last=now;return}const raw=now-last,dt=Math.min(.05,raw/1000);last=now;frame++;if(started&&!paused&&raw<500){fpsE+=(raw-fpsE)*.04;if(fpsE>33){if(++lowN>90&&autoQ){lowN=0;fpsE=16;if(GQ>0){gfx(GQ-1)}else if(RD>6){RD=Math.max(6,RD-4);toast('⚡ Performance mode: render distance ghatayi gayi ('+RD+')')}else{toast('⚡ Performance mode: graphics lowered')}}}else lowN=0}
+function loop(now){requestAnimationFrame(loop);if(!booted){last=now;return}try{const _c=window.CFGA?window.CFGA():null;if(_c&&typeof _c.fps==='number'){const _L=_c.fps<0?120:_c.fps;if(_L>0&&now-last<1000/_L-1)return}}catch(_e){}const raw=now-last,dt=Math.min(.05,raw/1000);last=now;frame++;if(started&&!paused&&raw<500){fpsE+=(raw-fpsE)*.04;if(fpsE>33){if(++lowN>90&&autoQ){lowN=0;fpsE=16;if(GQ>0){gfx(GQ-1)}else if(RD>6){RD=Math.max(6,RD-4);toast('⚡ Performance mode: render distance ghatayi gayi ('+RD+')')}else{toast('⚡ Performance mode: graphics lowered')}}}else lowN=0}
 if(started&&!dead&&!paused){physics(dt);if(!invOpen)mine(dt);else{brk=false}
 stream();updMobs(dt);updP(dt);
 for(let i=DS.length-1;i>=0;i--){const q=DS[i];q.t+=dt*4.2;const p=Math.min(1,q.t);q.pivot.rotation.y=q.dir*(q.op?p:1-p)*1.5708;if(p>=1){sc.remove(q.g);DS.splice(i,1)}}
@@ -2356,6 +2356,8 @@ const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:
 shadow:'high',ao:1,tex:'high',part:'all',water:1,clouds:'fancy',fog:'high',bsize:100,bopac:100,joy:100,jx:30,jy:90,vib:1,
 master:80,sfx:100,amb:100,music:40,mute:0,coords:1,cross:1,hand:1,dmg:1,hint:1,ui:100,text:'medium',rm:0,hc:0,cb:'off',lefty:0};
 let CFG=Object.assign({},DEF);try{Object.assign(CFG,JSON.parse(localStorage.getItem('bw3d_cfg')||'{}'))}catch(e){}
+/* one-time low-heat defaults for phones (old saved settings kept FPS on Auto=120 and shadows on) */
+try{if(navigator.maxTouchPoints>0&&!localStorage.getItem('bw3d_heatfix1')){Object.assign(CFG,{fps:30,shadow:'off',part:'min',clouds:'off',water:0,ao:0,fog:'low',rd:4});localStorage.setItem('bw3d_heatfix1','1');localStorage.setItem('bw3d_cfg',JSON.stringify(CFG));localStorage.setItem('bw3d_gq4','0')}}catch(e){}
 window.CFGA=()=>CFG;const save=()=>{try{localStorage.setItem('bw3d_cfg',JSON.stringify(CFG))}catch(e){}};
 function setVol(){if(window.__M)window.__M.gain.value=(window.CFG_M?0:1)*(window.CFG_V==null?.8:window.CFG_V)}
 if(window.SETOLD){SETOLD.sens=SETOLD.sx=SETOLD.sy=1}
