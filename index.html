@@ -6777,15 +6777,14 @@ window.__ravan={RAV,RARR};
 <script>window.addEventListener('load',()=>{if(window.IndianCraftAds)window.IndianCraftAds.showBanner()});</script>
 
 <script id="mobile-shadow-throttle">
-/* ===== Mobile lag fix: shadow pass was re-rendered EVERY frame (doubles GPU work in Medium/High). Now every 3rd frame + smaller shadow area. ===== */
+/* Mobile: only when SHADOWS are on (Medium/High) re-render the shadow map every 4th frame. Low is untouched. */
 (()=>{try{
 const mob=!!(typeof tc!=='undefined'&&tc)||(navigator.maxTouchPoints||0)>0;
 if(!mob||typeof R_==='undefined'||typeof sun==='undefined')return;
-R_.shadowMap.autoUpdate=false;R_.shadowMap.needsUpdate=true;
 let n=0;const rr=R_.render;
-R_.render=function(s,c){if(R_.shadowMap.enabled&&(++n%4===0))R_.shadowMap.needsUpdate=true;return rr.call(this,s,c)};
-const tight=()=>{try{const e=14;Object.assign(sun.shadow.camera,{left:-e,right:e,top:e,bottom:-e});sun.shadow.camera.updateProjectionMatrix();R_.shadowMap.needsUpdate=true}catch(x){}};
-const og=gfx;gfx=function(q){og(q);tight();try{if(GQ===1)RD=Math.min(RD,5);else if(GQ===0)RD=Math.min(RD,4)}catch(x){}};
+R_.render=function(s,c){const sm=R_.shadowMap;if(sm.enabled){sm.autoUpdate=false;if(++n%4===0)sm.needsUpdate=true}else if(!sm.autoUpdate){sm.autoUpdate=true}return rr.call(this,s,c)};
+const tight=()=>{try{if(!R_.shadowMap.enabled)return;const e=14;Object.assign(sun.shadow.camera,{left:-e,right:e,top:e,bottom:-e});sun.shadow.camera.updateProjectionMatrix();R_.shadowMap.needsUpdate=true}catch(x){}};
+const og=gfx;gfx=function(q){og(q);tight()};
 tight();
 }catch(e){console.warn('shadow throttle skipped',e)}})();
 </script>
