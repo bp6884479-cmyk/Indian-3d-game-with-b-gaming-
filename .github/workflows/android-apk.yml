@@ -124,12 +124,36 @@ jobs:
           p = 'android/app/src/main/AndroidManifest.xml'
           s = open(p, encoding='utf-8').read()
           s = s.replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"')
+          if 'android:screenOrientation' not in s:
+              s = s.replace('<activity', '<activity android:screenOrientation="sensorLandscape"', 1)
           tag = '<meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="%s"/>' % os.environ['ADMOB_APP_ID']
           if 'com.google.android.gms.ads.APPLICATION_ID' not in s:
               s = s.replace('</application>', '    ' + tag + '\n    </application>')
           open(p, 'w', encoding='utf-8').write(s)
           print('Manifest updated')
           PY
+
+      - name: Immersive fullscreen
+        run: |
+          sed -i 's#<style name="AppTheme.NoActionBar" parent="Theme.AppCompat.DayNight.NoActionBar">#&\n        <item name="android:windowFullscreen">true</item>\n        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>#' android/app/src/main/res/values/styles.xml
+          F=$(find android/app/src -name MainActivity.java | head -1)
+          PKG=$(grep -m1 '^package' "$F")
+          cat > "$F" <<EOF
+          $PKG
+          import android.os.Bundle;
+          import android.view.View;
+          import com.getcapacitor.BridgeActivity;
+          public class MainActivity extends BridgeActivity {
+            @Override public void onCreate(Bundle b){ super.onCreate(b); hide(); }
+            @Override public void onWindowFocusChanged(boolean f){ super.onWindowFocusChanged(f); if(f) hide(); }
+            private void hide(){
+              getWindow().getDecorView().setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_FULLSCREEN|
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE|
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            }
+          }
+          EOF
 
       - name: Build APK
         run: |
