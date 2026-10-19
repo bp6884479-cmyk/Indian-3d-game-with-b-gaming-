@@ -6682,6 +6682,7 @@ window.__ravan={RAV,RARR};
   var G = window.INDIANCRAFT_AD_IDS || {};
   var ready = false, initP = null, rewardedFlag = false, listenerSet = false;
   var DEBUG = true; /* error box dekhne ke liye true karo */
+  var ADS_OFF = true;  /* true = AdMob bilkul band (lag/heat test ke liye) */
   var dbgEl = null;
   function dbg(msg) {
     console.warn('[ADS] ' + msg);
@@ -6700,6 +6701,7 @@ window.__ravan={RAV,RARR};
   function errText(e) { try { return (e && (e.message || e.errorMessage || JSON.stringify(e))) || String(e); } catch (x) { return String(e); } }
 
   function init() {
+    if (ADS_OFF) return Promise.resolve(false);
     if (!native || !AdMob) { dbg('AdMob plugin nahi mila. Capacitor=' + !!Cap + ', native=' + native + ', plugin=' + !!AdMob + ', registerPlugin=' + (Cap ? typeof Cap.registerPlugin : '-') + ', Plugins=[' + (Cap && Cap.Plugins ? Object.keys(Cap.Plugins).join(',') : '-') + ']'); return Promise.resolve(false); }
     if (ready) return Promise.resolve(true);
     if (!initP) initP = AdMob.initialize().then(function () {
