@@ -2352,7 +2352,7 @@ if(sB)sB.onclick=openHub;if(mS)mS.onclick=openHub;
 const OA=window.AudioContext||window.webkitAudioContext;
 if(OA){const W=function(...a){const c=new OA(...a),real=c.destination,m=c.createGain();m.connect(real);Object.defineProperty(c,'destination',{get:()=>m});window.__M=m;setVol();return c};W.prototype=OA.prototype;window.AudioContext=W}
 window.AMB=f=>{window.VOLK=CFG.amb/100;try{f()}finally{window.VOLK=CFG.sfx/100}};
-const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:0,invX:0,smooth:0,fov:72,shake:1,bright:50,rd:0,fps:-1,showfps:0,bob:1,
+const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:0,invX:0,smooth:0,fov:72,shake:1,bright:50,rd:0,fps:((navigator.maxTouchPoints>0)?30:-1),showfps:0,bob:1,
 shadow:'high',ao:1,tex:'high',part:'all',water:1,clouds:'fancy',fog:'high',bsize:100,bopac:100,joy:100,jx:30,jy:90,vib:1,
 master:80,sfx:100,amb:100,music:40,mute:0,coords:1,cross:1,hand:1,dmg:1,hint:1,ui:100,text:'medium',rm:0,hc:0,cb:'off',lefty:0};
 let CFG=Object.assign({},DEF);try{Object.assign(CFG,JSON.parse(localStorage.getItem('bw3d_cfg')||'{}'))}catch(e){}
