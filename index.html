@@ -6299,6 +6299,30 @@ op.insertAdjacentElement('afterend',b);paint();
 setInterval(()=>{if(m.style.display!=='none')paint()},600);
 }catch(e){console.warn('mode toggle failed',e)}})();
 </script>
+<script>
+/* ===== DIAG: GPU/WebView + Ads info box (DEBUG ke saath dikhta hai). Release me hata dena ===== */
+(function(){
+  setTimeout(function(){
+    try{
+      var gl=R_.getContext(),ex=gl.getExtension('WEBGL_debug_renderer_info');
+      var rend=ex?gl.getParameter(ex.UNMASKED_RENDERER_WEBGL):gl.getParameter(gl.RENDERER);
+      var m=(navigator.userAgent.match(/Chrome\/([\d.]+)/)||[])[1]||'?';
+      var d=document.createElement('div');
+      d.style.cssText='position:fixed;left:4px;right:4px;bottom:4px;z-index:99998;background:rgba(0,0,0,.85);color:#7CFC9A;font:12px/1.35 monospace;padding:6px 8px;border:1px solid #7CFC9A;border-radius:6px;white-space:pre-wrap;max-height:45vh;overflow:auto';
+      function upd(){
+        var cfg=window.CFGA?window.CFGA():{};
+        var C=window.Capacitor;
+        d.textContent='GPU: '+rend+'\nWebView/Chrome: '+m+'\nscreen '+innerWidth+'x'+innerHeight+' dpr '+devicePixelRatio+' -> render pr '+R_.getPixelRatio()+'\nFPS limit: '+cfg.fps+'  RD: '+(typeof RD!=='undefined'?RD:'?')+
+          '\nADS: '+(window.__adsOff?'OFF':'ON')+'  TEST mode: '+(window.__adsTest?'yes':'no (real ads)')+'  native: '+!!(C&&C.isNativePlatform&&C.isNativePlatform())+
+          '\nAd status: '+(window.__lastAdMsg||'koi error nahi (ya ad abhi tak request nahi hua)')+'\n(tap to hide)';
+      }
+      upd();setInterval(upd,2000);
+      d.onclick=function(){d.style.display='none'};
+      document.body.appendChild(d);
+    }catch(e){}
+  },4000);
+})();
+</script>
 </body></html>
 
 <script id="mode-separation">
@@ -6682,10 +6706,12 @@ window.__ravan={RAV,RARR};
   var G = window.INDIANCRAFT_AD_IDS || {};
   var ready = false, initP = null, rewardedFlag = false, listenerSet = false;
   var DEBUG = true; /* error box dekhne ke liye true karo */
-  var ADS_OFF = true;  /* true = AdMob bilkul band (lag/heat test ke liye) */
+  var ADS_OFF = false; /* true = AdMob bilkul band (lag/heat test ke liye) */
+  window.__adsOff = ADS_OFF; window.__adsTest = TEST;
   var dbgEl = null;
   function dbg(msg) {
     console.warn('[ADS] ' + msg);
+    window.__lastAdMsg = msg;
     if (!DEBUG) return;
     try {
       if (!dbgEl) {
