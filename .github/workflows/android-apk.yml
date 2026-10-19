@@ -5,6 +5,9 @@ on:
   push:
     branches: [ "main" ]
 
+env:
+  ADMOB_APP_ID: ca-app-pub-7956447630438100~9662953701
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -30,7 +33,7 @@ jobs:
             npm init -y
           fi
 
-          npm install @capacitor/cli @capacitor/core @capacitor/android @capacitor/browser @capacitor/assets
+          npm install @capacitor/cli@7 @capacitor/core@7 @capacitor/android@7 @capacitor/browser@7 @capacitor-community/admob@7 @capacitor/assets
 
           mkdir -p www
 
@@ -114,15 +117,19 @@ jobs:
         run: |
           npx capacitor-assets generate --android
 
-      - name: Fix Android Manifest
+      - name: Fix Android Manifest and add AdMob App ID
         run: |
-          MANIFEST="android/app/src/main/AndroidManifest.xml"
-
-          if [ -f "$MANIFEST" ]; then
-            sed -i \
-              's/android:usesCleartextTraffic="false"/android:usesCleartextTraffic="true"/' \
-              "$MANIFEST"
-          fi
+          python3 - <<'PY'
+          import os
+          p = 'android/app/src/main/AndroidManifest.xml'
+          s = open(p, encoding='utf-8').read()
+          s = s.replace('android:usesCleartextTraffic="false"', 'android:usesCleartextTraffic="true"')
+          tag = '<meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="%s"/>' % os.environ['ADMOB_APP_ID']
+          if 'com.google.android.gms.ads.APPLICATION_ID' not in s:
+              s = s.replace('</application>', '    ' + tag + '\n    </application>')
+          open(p, 'w', encoding='utf-8').write(s)
+          print('Manifest updated')
+          PY
 
       - name: Build APK
         run: |
