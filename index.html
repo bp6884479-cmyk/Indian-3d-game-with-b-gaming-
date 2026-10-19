@@ -676,7 +676,7 @@ return c}
 const OFF=[];for(let a=-32;a<=32;a++)for(let b=-32;b<=32;b++)OFF.push([a,b]);OFF.sort((p,q)=>p[0]**2+p[1]**2-q[0]**2-q[1]**2);
 let RD=4;
 function stream(){const pc=Math.floor(P.x)>>4,pz=Math.floor(P.z)>>4;
-let __gen=0;for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;if(!chunks.has((pc+a)+','+(pz+b))){mk(pc+a,pz+b);__gen=1;break}}
+let __gen=0;if(!tc||!started||frame%3==0)for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;if(!chunks.has((pc+a)+','+(pz+b))){mk(pc+a,pz+b);__gen=1;break}}
 let m=0,mb=tc?1:(fpsE<20?4:(fpsE<28?2:1));if(tc&&__gen&&started)mb=0;for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;const c=chunks.get((pc+a)+','+(pz+b));if(c&&c.dirty){if(mb<1)break;mesh(c);if(++m>=mb)break}}
 if(frame%90==0)for(const[k,c]of chunks)if((c.cx-pc)**2+(c.cz-pz)**2>(RD+2)**2){c.ms.forEach(m=>{sc.remove(m);m.geometry.dispose()});chunks.delete(k)}}
 /* ---------- inventory ---------- */
