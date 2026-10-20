@@ -676,9 +676,11 @@ for(const v of vnear(cx*16+8,cz*16+8,8.5)){if(mobs.filter(m=>m.type==3&&Math.hyp
 return c}
 const OFF=[];for(let a=-32;a<=32;a++)for(let b=-32;b<=32;b++)OFF.push([a,b]);OFF.sort((p,q)=>p[0]**2+p[1]**2-q[0]**2-q[1]**2);
 let RD=4;
+var __lj=0,__ts=0;
 function stream(){const pc=Math.floor(P.x)>>4,pz=Math.floor(P.z)>>4;
-let __gen=0;if(!tc||!started||frame%3==0)for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;if(!chunks.has((pc+a)+','+(pz+b))){mk(pc+a,pz+b);__gen=1;break}}
-let m=0,mb=tc?1:(fpsE<20?4:(fpsE<28?2:1));if(tc&&__gen&&started)mb=0;for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;const c=chunks.get((pc+a)+','+(pz+b));if(c&&c.dirty){if(mb<1)break;mesh(c);if(++m>=mb)break}}
+const __now=performance.now();if(started&&!__ts)__ts=__now;const __paced=tc&&started&&__ts&&(__now-__ts>8000),__ok=!__paced||(__now-__lj>=90);
+let __gen=0;if(!tc||!started||frame%3==0)for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;if(!chunks.has((pc+a)+','+(pz+b))){const __nr=a*a+b*b<=4;if(__ok||__nr){mk(pc+a,pz+b);__gen=1;if(!__nr)__lj=__now}break}}
+let m=0,mb=tc?1:(fpsE<20?4:(fpsE<28?2:1));if(tc&&__gen&&started)mb=0;for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;const c=chunks.get((pc+a)+','+(pz+b));if(c&&c.dirty){if(mb<1)break;const __nr=a*a+b*b<=4;if(!__ok&&!__nr)break;mesh(c);if(!__nr)__lj=__now;if(++m>=mb)break}}
 if(frame%90==0)for(const[k,c]of chunks)if((c.cx-pc)**2+(c.cz-pz)**2>(RD+2)**2){c.ms.forEach(m=>{sc.remove(m);m.geometry.dispose()});chunks.delete(k)}}
 /* ---------- inventory ---------- */
 const S=Array(36).fill(null);let sel=0,tab='items',chestK=null,fuel=0,food=20,hp=20;
@@ -6551,7 +6553,7 @@ window.__rmjm={LAY};
 <script>
 /* ===== RAVAN: 10 sir wala sabse powerful mob. Din ho ya raat, kahi bhi aata hai. Uske 2 teer = player khatam. ===== */
 (()=>{try{
-const TYPE=30,MAXHP=220;
+const TYPE=30,MAXHP=100;
 const T_FIRST=40,T_GAP_MIN=200,T_GAP_MAX=320;   /* seconds: pehli baar aane ka time, phir marne ke baad dubara aane ka gap */
 const ASPD=26,AGRAV=10,MAXARR=26;
 const RAV=[],RARR=[];
