@@ -678,7 +678,7 @@ const OFF=[];for(let a=-32;a<=32;a++)for(let b=-32;b<=32;b++)OFF.push([a,b]);OFF
 let RD=4;
 var __lj=0,__ts=0;
 function stream(){const pc=Math.floor(P.x)>>4,pz=Math.floor(P.z)>>4;
-const __now=performance.now();if(started&&!__ts)__ts=__now;const __paced=tc&&started&&__ts&&(__now-__ts>8000),__ok=!__paced||(__now-__lj>=90);
+const __now=performance.now();if(started&&!__ts)__ts=__now;const __paced=tc&&started&&__ts&&(__now-__ts>8000)&&!riding,__ok=!__paced||(__now-__lj>=90);
 let __gen=0;if(!tc||!started||frame%3==0)for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;if(!chunks.has((pc+a)+','+(pz+b))){const __nr=a*a+b*b<=4;if(__ok||__nr){mk(pc+a,pz+b);__gen=1;if(!__nr)__lj=__now}break}}
 let m=0,mb=tc?1:(fpsE<20?4:(fpsE<28?2:1));if(tc&&__gen&&started)mb=0;for(const[a,b]of OFF){if(a*a+b*b>RD*RD)break;const c=chunks.get((pc+a)+','+(pz+b));if(c&&c.dirty){if(mb<1)break;const __nr=a*a+b*b<=4;if(!__ok&&!__nr)break;mesh(c);if(!__nr)__lj=__now;if(++m>=mb)break}}
 if(frame%90==0)for(const[k,c]of chunks)if((c.cx-pc)**2+(c.cz-pz)**2>(RD+2)**2){c.ms.forEach(m=>{sc.remove(m);m.geometry.dispose()});chunks.delete(k)}}
@@ -1638,7 +1638,7 @@ R_.render=function(s,c){
   pos.copy(ct).addScaledVector(want,effD);cam.position.copy(pos);cam.lookAt(ct);dQ.copy(cam.quaternion);dP=pos;dq=dQ}
  if(tr<1){const e=tr*tr*(3-2*tr);cam.position.copy(fromP).lerp(dP,e);cam.quaternion.copy(fromQ).slerp(dq,e)}
  else{cam.position.copy(dP);cam.quaternion.copy(dq)}
- PM.visible=mode>0&&(!aimNow||tr<1);hand.visible=mode===0||aimNow;if(PM.visible)animModel(dt);tpHold.visible=PM.visible&&mode>0&&tpHold.visible;
+ PM.visible=mode>0&&(!aimNow||tr<1)&&!(riding==2&&cart&&cart.train);hand.visible=mode===0||aimNow;if(PM.visible)animModel(dt);tpHold.visible=PM.visible&&mode>0&&tpHold.visible;
  const hc=mode===2;if(hc!==crossHid){crossHid=hc;$('#cross').style.display=hc?'none':''}
  if(fc%6==0)btn.style.display=(started&&!paused&&!dead&&!invOpen)?'flex':'none';
  _r(s,c);
@@ -5132,7 +5132,7 @@ setInterval(()=>{try{
  if(!started||dead||typeof UK==='undefined')return;
  const key='bw3d_kit_'+UK;
  kitFor=key;
- if(window.CRE){for(const[id]of AM){const n=cnt(id);if(n<32)add(id,32-n)}}
+ if(window.CRE&&!window.__ammoClean){window.__ammoClean=1;try{if(!localStorage.getItem('bw3d_ammo_clean')){for(let i=0;i<S.length;i++){const s=S[i];if(s&&(s.id==134||s.id==135||s.id==136)&&s.n==32)S[i]=null}localStorage.setItem('bw3d_ammo_clean','1');ui();try{save()}catch(e){}}}catch(e){}}
 }catch(e){}},700);
 /* B) lag: trains outside fog range are not drawn; shadows only for trains near the player */
 const T0=()=>typeof TRN!=='undefined'?TRN:[];
