@@ -2352,12 +2352,12 @@ if(sB)sB.onclick=openHub;if(mS)mS.onclick=openHub;
 const OA=window.AudioContext||window.webkitAudioContext;
 if(OA){const W=function(...a){const c=new OA(...a),real=c.destination,m=c.createGain();m.connect(real);Object.defineProperty(c,'destination',{get:()=>m});window.__M=m;setVol();return c};W.prototype=OA.prototype;window.AudioContext=W}
 window.AMB=f=>{window.VOLK=CFG.amb/100;try{f()}finally{window.VOLK=CFG.sfx/100}};
-const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:0,invX:0,smooth:0,fov:72,shake:1,bright:50,rd:0,fps:((navigator.maxTouchPoints>0)?30:-1),showfps:0,bob:1,
+const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:0,invX:0,smooth:0,fov:72,shake:1,bright:50,rd:0,fps:((navigator.maxTouchPoints>0)?60:-1),showfps:0,bob:1,
 shadow:'high',ao:1,tex:'high',part:'all',water:1,clouds:'fancy',fog:'high',bsize:100,bopac:100,joy:100,jx:30,jy:90,vib:1,
 master:80,sfx:100,amb:100,music:40,mute:0,coords:1,cross:1,hand:1,dmg:1,hint:1,ui:100,text:'medium',rm:0,hc:0,cb:'off',lefty:0};
 let CFG=Object.assign({},DEF);try{Object.assign(CFG,JSON.parse(localStorage.getItem('bw3d_cfg')||'{}'))}catch(e){}
 /* one-time low-heat defaults for phones (old saved settings kept FPS on Auto=120 and shadows on) */
-try{if(navigator.maxTouchPoints>0&&!localStorage.getItem('bw3d_heatfix1')){Object.assign(CFG,{fps:30,shadow:'off',part:'min',clouds:'off',water:0,ao:0,fog:'low',rd:4});localStorage.setItem('bw3d_heatfix1','1');localStorage.setItem('bw3d_cfg',JSON.stringify(CFG));localStorage.setItem('bw3d_gq4','0')}}catch(e){}
+try{if(navigator.maxTouchPoints>0&&!localStorage.getItem('bw3d_heatfix1')){Object.assign(CFG,{fps:60,shadow:'off',part:'min',clouds:'off',water:0,ao:0,fog:'low',rd:4});localStorage.setItem('bw3d_heatfix1','1');localStorage.setItem('bw3d_cfg',JSON.stringify(CFG));localStorage.setItem('bw3d_gq4','0')}}catch(e){}
 window.CFGA=()=>CFG;const save=()=>{try{localStorage.setItem('bw3d_cfg',JSON.stringify(CFG))}catch(e){}};
 function setVol(){if(window.__M)window.__M.gain.value=(window.CFG_M?0:1)*(window.CFG_V==null?.8:window.CFG_V)}
 if(window.SETOLD){SETOLD.sens=SETOLD.sx=SETOLD.sy=1}
@@ -2427,9 +2427,9 @@ else if(CFG.smooth&&(pY||pP)){const ay=pY*.4,ap=pP*.4;pY-=ay;pP-=ap;P.yaw+=ay;P.
 const ox=mv.x,oz=mv.z,j=CFG.joy/100*(food<=3&&!window.CRE?.7:1);mv.x=clamp(ox*j,-1,1);mv.z=clamp(oz*j,-1,1);_ph(dt);mv.x=ox;mv.z=oz;aY=P.yaw;aP=P.pit;
 if(!riding&&(!CFG.bob||CFG.rm))cam.position.y=P.y+1.62;
 if(shakeT>0){shakeT-=dt;if(CFG.shake&&!CFG.rm){cam.rotation.x+=(Math.random()-.5)*.04;cam.rotation.z+=(Math.random()-.5)*.04}}};
-const _rr=R_.render;let lr=0;R_.render=function(s,c){let L=CFG.fps;if(L<0)L=120;if(L){const n=performance.now();if(n-lr<1000/L-Math.min(7,500/L))return;lr=n}window.__rc=(window.__rc||0)+1;_rr.call(R_,s,c)};
+const _rr=R_.render;let lr=0;R_.render=function(s,c){let L=CFG.fps;if(L<0)L=120;if(L){const n=performance.now();const iv=1000/L;if(n-lr<iv-2)return;lr=(n-lr>iv*1.5)?n:lr+iv}window.__rc=(window.__rc||0)+1;_rr.call(R_,s,c)};
 let fc=0,ft=performance.now(),cl=0;
-(function f(n){requestAnimationFrame(f);if(n-ft>=500){const rc=window.__rc||0;fpsd.textContent=Math.round((rc-fc)*1000/(n-ft))+' FPS v9 G'+R_.info.memory.geometries+' M'+mobs.length+(window.__dbg||'');fc=rc;ft=n}
+(function f(n){requestAnimationFrame(f);if(n-ft>=500){const rc=window.__rc||0;fpsd.textContent=Math.round((rc-fc)*1000/(n-ft))+' FPS';fc=rc;ft=n}
 if(!started){aY=P.yaw;aP=P.pit}
 if(window.CRE&&food<20)food=20;
 if(CFG.diff=='peaceful'&&++cl%60==0)for(const m of mobs){const t=m.type;if(!m.dead&&(t==2||t==8||t==9||t==10||t==11||t==17||t==18)){m.dead=1;sc.remove(m.g)}}})(0);
@@ -6339,7 +6339,7 @@ var _g=window.gfx;
 if(typeof _g==='function'){window.gfx=gfx=function(q){_g(q);try{var p=Math.min(R_.getPixelRatio(),1);R_.setPixelRatio(p);R_.setSize(VW(),VH())}catch(e){}}}
 /* 2) antialias off already; ACES tonemapping costs per pixel in WebView -> keep look, but skip shadow soft */
 /* 3) hard cap 30fps unless user explicitly chose higher */
-try{var c=window.CFGA&&window.CFGA();if(c&&(c.fps<0||c.fps>30)&&!localStorage.getItem('apk_fps_set')){c.fps=30;localStorage.setItem('apk_fps_set','1');localStorage.setItem('bw3d_cfg',JSON.stringify(c))}}catch(e){}
+
 /* 4) shadows only on HIGH+ on touch */
 }catch(e){}})();
 </script><script id="apkperf-js2">
@@ -6357,18 +6357,6 @@ if(typeof GQ==='number'&&GQ>=0)gfx(GQ);
 /* mobs/objects create new BoxGeometry per part; sc.remove never freed it -> GPU memory grew until lag. Free it on remove. */
 var _r=sc.remove.bind(sc);
 sc.remove=function(){for(var i=0;i<arguments.length;i++){var o=arguments[i];try{if(o&&o.traverse)o.traverse(function(x){if(x.geometry&&x.geometry.dispose)x.geometry.dispose()})}catch(e){}}return _r.apply(sc,arguments)};
-}catch(e){}})();
-</script><script id="apkperf-dbg">
-(function(){try{
-var st={mk:0,mesh:0,gap:0,js:0,r:0,n:0},last=performance.now();
-var _raf=window.requestAnimationFrame.bind(window),inF=0,fs=0;
-window.requestAnimationFrame=function(cb){return _raf(function(ts){var s=performance.now();cb(ts);st.js+=performance.now()-s})};
-var _rd=R_.render.bind(R_);R_.render=function(a,b){var c0=window.__rc||0,s=performance.now();_rd(a,b);if((window.__rc||0)!==c0){st.r+=performance.now()-s;st.n++}};
-function w(n){var f=window[n];if(typeof f!=='function')return;window[n]=function(){var t=performance.now();try{return f.apply(this,arguments)}finally{var d=performance.now()-t;if(d>st[n])st[n]=d}}}
-w('mk');w('mesh');
-(function l(n){requestAnimationFrame(l);var g=n-last;last=n;if(g>st.gap)st.gap=g})(performance.now());
-setInterval(function(){var m=performance.memory?Math.round(performance.memory.usedJSHeapSize/1048576):0;
-var ri=R_.info.render;window.__dbg=' H'+m+' js'+(st.n?(st.js/st.n).toFixed(0):0)+' r'+(st.n?(st.r/st.n).toFixed(0):0)+' C'+ri.calls+' T'+Math.round(ri.triangles/1000)+'k mk'+Math.round(st.mk)+' ms'+Math.round(st.mesh);st.mk=st.mesh=st.gap=st.js=st.r=st.n=0},3000);
 }catch(e){}})();
 </script></body></html>
 
