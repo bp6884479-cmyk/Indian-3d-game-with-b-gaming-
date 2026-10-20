@@ -2429,7 +2429,7 @@ if(!riding&&(!CFG.bob||CFG.rm))cam.position.y=P.y+1.62;
 if(shakeT>0){shakeT-=dt;if(CFG.shake&&!CFG.rm){cam.rotation.x+=(Math.random()-.5)*.04;cam.rotation.z+=(Math.random()-.5)*.04}}};
 const _rr=R_.render;let lr=0;R_.render=function(s,c){let L=CFG.fps;if(L<0)L=120;if(L){const n=performance.now();if(n-lr<1000/L-Math.min(7,500/L))return;lr=n}window.__rc=(window.__rc||0)+1;_rr.call(R_,s,c)};
 let fc=0,ft=performance.now(),cl=0;
-(function f(n){requestAnimationFrame(f);if(n-ft>=500){const rc=window.__rc||0;fpsd.textContent=Math.round((rc-fc)*1000/(n-ft))+' FPS';fc=rc;ft=n}
+(function f(n){requestAnimationFrame(f);if(n-ft>=500){const rc=window.__rc||0;fpsd.textContent=Math.round((rc-fc)*1000/(n-ft))+' FPS  G'+R_.info.memory.geometries+' M'+mobs.length;fc=rc;ft=n}
 if(!started){aY=P.yaw;aP=P.pit}
 if(window.CRE&&food<20)food=20;
 if(CFG.diff=='peaceful'&&++cl%60==0)for(const m of mobs){const t=m.type;if(!m.dead&&(t==2||t==8||t==9||t==10||t==11||t==17||t==18)){m.dead=1;sc.remove(m.g)}}})(0);
@@ -6351,6 +6351,12 @@ window.gfx=gfx=function(q){_g2(q);try{
  if(R_.shadowMap.enabled&&!(window.CFGA&&window.CFGA().shadow&&window.CFGA().shadow!=='off'&&window.__shUser)){R_.shadowMap.enabled=false;sun.castShadow=false;mO.needsUpdate=mT.needsUpdate=mL.needsUpdate=true}
 }catch(e){}};
 if(typeof GQ==='number'&&GQ>=0)gfx(GQ);
+}catch(e){}})();
+</script><script id="apkperf-leak">
+(function(){try{
+/* mobs/objects create new BoxGeometry per part; sc.remove never freed it -> GPU memory grew until lag. Free it on remove. */
+var _r=sc.remove.bind(sc);
+sc.remove=function(){for(var i=0;i<arguments.length;i++){var o=arguments[i];try{if(o&&o.traverse)o.traverse(function(x){if(x.geometry&&x.geometry.dispose)x.geometry.dispose()})}catch(e){}}return _r.apply(sc,arguments)};
 }catch(e){}})();
 </script></body></html>
 
