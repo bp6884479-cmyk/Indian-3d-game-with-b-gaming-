@@ -652,7 +652,8 @@ const CQ=[[[0,0,0],[0,1,0],[1,1,1],[1,0,1]],[[1,0,0],[1,1,0],[0,1,1],[0,0,1]]];
 function mesh(c){c.dirty=0;for(const m of c.ms){sc.remove(m);m.geometry.dispose()}c.ms=[];
 const L=[0,1,2].map(()=>({p:[],n:[],u:[],c:[],i:[]})),X0=c.cx*16,Z0=c.cz*16,ht=new Int16Array(256);
 for(let z=0;z<16;z++)for(let x=0;x<16;x++){let y=HT-1;while(y>0){const b=c.d[(y*16+z)*16+x];if(b&&(B[b].occ||b==6||b==75||b==76||b==85))break;y--}ht[z*16+x]=y}
-for(let y=0;y<HT;y++)for(let z=0;z<16;z++)for(let x=0;x<16;x++){const id=c.d[(y*16+z)*16+x];if(!id)continue;
+let __top=0;for(let i=c.d.length-1;i>=0;i--){if(c.d[i]){__top=(i>>8);break}}
+for(let y=0;y<=__top&&y<HT;y++)for(let z=0;z<16;z++)for(let x=0;x<16;x++){const id=c.d[(y*16+z)*16+x];if(!id)continue;
 const d=B[id],wx=X0+x,wz=Z0+z,inDes=(id==4||id==83||id==87)&&!!(window.isDes&&window.isDes(wx,wz)),l=L[d.tr?1:(id==6||id==75||id==76||id==85)?2:0],full=!d.box;
 let bx=full?[0,0,0,1,1,1]:BX(id,M.get(wx+','+y+','+wz)|0);if(id==11&&get(wx,y+1,wz)!=11)bx=[0,0,0,1,.88,1];const bxs=(!full&&window.BXM&&window.BXM(id,M.get(wx+','+y+','+wz)|0))||[bx];
 const lt=id==44||id==51||id==16?2.3:(id==6||id==75||id==76||id==85||id==5||id==35)?1:Math.max(.55,1-Math.max(0,ht[z*16+x]-y)*.06),wd=id==11?(()=>{let k=0;while(k<10&&get(wx,y-1-k,wz)==11)k++;return k})():0,wc=id==11?[.38-wd*.012,.58-wd*.018,.78-wd*.02]:null;
@@ -1778,8 +1779,8 @@ const QS=[
 {n:'LOW',d:'Best performance. No shadows, fewer lights and particles, short view distance.',rd:4,pr:Math.min(devicePixelRatio,1),sh:0,ms:1024,soft:0,pl:1,pf:.3},
 {n:'MEDIUM',d:'Balanced. Basic shadows, moderate lights and particles.',rd:6,pr:Math.min(devicePixelRatio,tc?1.1:1.9),sh:1,ms:tc?512:1024,soft:0,pl:tc?1:3,pf:.6},
 {n:'HIGH',d:'Soft shadows, full lighting, glow, richer particles and water.',rd:8,pr:Math.min(devicePixelRatio,tc?1.35:2.2),sh:1,ms:tc?1024:1024,soft:tc?0:1,pl:tc?2:5,pf:.9},
-{n:'ULTRA HD',d:'Maximum the device supports: sharpest resolution and shadows, farthest view, most particles.',rd:tc?9:12,pr:tc?Math.min(devicePixelRatio,1.6):Math.min(devicePixelRatio*1.25,3),sh:1,ms:tc?2048:4096,soft:1,pl:6,pf:1.4,tight:1}];
-let UQ=tc?1:2;try{const v=localStorage.getItem('bw3d_gq4');if(v!=null&&QS[+v])UQ=+v}catch(e){}
+{n:'ULTRA HD',d:'Maximum the device supports: sharpest resolution and shadows, farthest view, most particles.',rd:tc?7:12,pr:tc?Math.min(devicePixelRatio,1.25):Math.min(devicePixelRatio*1.25,3),sh:1,ms:tc?1024:4096,soft:1,pl:6,pf:1.4,tight:1}];
+let UQ=0;try{const v=localStorage.getItem('bw3d_gq4');if(v!=null&&QS[+v])UQ=+v}catch(e){}
 let QF=1,lastQ=-1;
 const _bu=burst;burst=function(x,y,z,c,n,f){_bu(x,y,z,c,f?n:Math.max(1,Math.round(n*QF)),f)};
 const _wa=waterAnim;let wc=0;waterAnim=function(t){if(GQ==0&&(++wc%3))return;_wa(t)};
@@ -2352,7 +2353,7 @@ if(sB)sB.onclick=openHub;if(mS)mS.onclick=openHub;
 const OA=window.AudioContext||window.webkitAudioContext;
 if(OA){const W=function(...a){const c=new OA(...a),real=c.destination,m=c.createGain();m.connect(real);Object.defineProperty(c,'destination',{get:()=>m});window.__M=m;setVol();return c};W.prototype=OA.prototype;window.AudioContext=W}
 window.AMB=f=>{window.VOLK=CFG.amb/100;try{f()}finally{window.VOLK=CFG.sfx/100}};
-const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:0,invX:0,smooth:0,fov:72,shake:1,bright:50,rd:0,fps:((navigator.maxTouchPoints>0)?60:-1),showfps:0,bob:1,
+const DEF={mode:'survival',diff:'normal',hud:1,cam:160,touch:100,mouse:100,invY:0,invX:0,smooth:0,fov:72,shake:1,bright:50,rd:0,fps:60,showfps:0,bob:1,
 shadow:'high',ao:1,tex:'high',part:'all',water:1,clouds:'fancy',fog:'high',bsize:100,bopac:100,joy:100,jx:30,jy:90,vib:1,
 master:80,sfx:100,amb:100,music:40,mute:0,coords:1,cross:1,hand:1,dmg:1,hint:1,ui:100,text:'medium',rm:0,hc:0,cb:'off',lefty:0};
 let CFG=Object.assign({},DEF);try{Object.assign(CFG,JSON.parse(localStorage.getItem('bw3d_cfg')||'{}'))}catch(e){}
@@ -6357,6 +6358,13 @@ if(typeof GQ==='number'&&GQ>=0)gfx(GQ);
 /* mobs/objects create new BoxGeometry per part; sc.remove never freed it -> GPU memory grew until lag. Free it on remove. */
 var _r=sc.remove.bind(sc);
 sc.remove=function(){for(var i=0;i<arguments.length;i++){var o=arguments[i];try{if(o&&o.traverse)o.traverse(function(x){if(x.geometry&&x.geometry.dispose)x.geometry.dispose()})}catch(e){}}return _r.apply(sc,arguments)};
+}catch(e){}})();
+</script><script id="apkperf-fps60">
+(function(){try{
+if(localStorage.getItem('bw3d_fps60m'))return;
+localStorage.setItem('bw3d_fps60m','1');
+var c=window.CFGA&&window.CFGA();
+if(c&&c.fps===30){c.fps=60;localStorage.setItem('bw3d_cfg',JSON.stringify(c))}
 }catch(e){}})();
 </script></body></html>
 
