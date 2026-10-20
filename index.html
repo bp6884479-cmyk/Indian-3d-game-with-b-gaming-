@@ -2429,7 +2429,7 @@ if(!riding&&(!CFG.bob||CFG.rm))cam.position.y=P.y+1.62;
 if(shakeT>0){shakeT-=dt;if(CFG.shake&&!CFG.rm){cam.rotation.x+=(Math.random()-.5)*.04;cam.rotation.z+=(Math.random()-.5)*.04}}};
 const _rr=R_.render;let lr=0;R_.render=function(s,c){let L=CFG.fps;if(L<0)L=120;if(L){const n=performance.now();if(n-lr<1000/L-Math.min(7,500/L))return;lr=n}window.__rc=(window.__rc||0)+1;_rr.call(R_,s,c)};
 let fc=0,ft=performance.now(),cl=0;
-(function f(n){requestAnimationFrame(f);if(n-ft>=500){const rc=window.__rc||0;fpsd.textContent=Math.round((rc-fc)*1000/(n-ft))+' FPS  G'+R_.info.memory.geometries+' M'+mobs.length;fc=rc;ft=n}
+(function f(n){requestAnimationFrame(f);if(n-ft>=500){const rc=window.__rc||0;fpsd.textContent=Math.round((rc-fc)*1000/(n-ft))+' FPS G'+R_.info.memory.geometries+' M'+mobs.length+(window.__dbg||'');fc=rc;ft=n}
 if(!started){aY=P.yaw;aP=P.pit}
 if(window.CRE&&food<20)food=20;
 if(CFG.diff=='peaceful'&&++cl%60==0)for(const m of mobs){const t=m.type;if(!m.dead&&(t==2||t==8||t==9||t==10||t==11||t==17||t==18)){m.dead=1;sc.remove(m.g)}}})(0);
@@ -6357,6 +6357,15 @@ if(typeof GQ==='number'&&GQ>=0)gfx(GQ);
 /* mobs/objects create new BoxGeometry per part; sc.remove never freed it -> GPU memory grew until lag. Free it on remove. */
 var _r=sc.remove.bind(sc);
 sc.remove=function(){for(var i=0;i<arguments.length;i++){var o=arguments[i];try{if(o&&o.traverse)o.traverse(function(x){if(x.geometry&&x.geometry.dispose)x.geometry.dispose()})}catch(e){}}return _r.apply(sc,arguments)};
+}catch(e){}})();
+</script><script id="apkperf-dbg">
+(function(){try{
+var st={mk:0,mesh:0,gap:0},last=performance.now();
+function w(n){var f=window[n];if(typeof f!=='function')return;window[n]=function(){var t=performance.now();try{return f.apply(this,arguments)}finally{var d=performance.now()-t;if(d>st[n])st[n]=d}}}
+w('mk');w('mesh');
+(function l(n){requestAnimationFrame(l);var g=n-last;last=n;if(g>st.gap)st.gap=g})(performance.now());
+setInterval(function(){var m=performance.memory?Math.round(performance.memory.usedJSHeapSize/1048576):0;
+window.__dbg=' H'+m+' mk'+Math.round(st.mk)+' ms'+Math.round(st.mesh)+' gap'+Math.round(st.gap);st.mk=st.mesh=st.gap=0},3000);
 }catch(e){}})();
 </script></body></html>
 
